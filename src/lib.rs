@@ -47,5 +47,10 @@ mod test {
     fn test_shake128() {
         let digest = rust_k12("testing".as_bytes(), "someinput".as_bytes(), 16);
         println!("K12('testing', 'someinput', 16):  {:?}", digest);
+
+        assert_eq!(
+            digest,
+            [187, 19, 67, 214, 73, 178, 187, 16, 174, 135, 82, 238, 25, 49, 129, 242]
+        );
     }
 }
