@@ -153,10 +153,6 @@ impl KangarooTwelve {
         }
         output
     }
-/*
-    pub fn squeeze() -> Vec<u8> {
-
-    }*/
 }
 
 #[cfg(test)]
@@ -177,7 +173,5 @@ mod test {
         let digest2 = state.finalize();
 
         assert_eq!(digest, digest2);
-    }
-
-    
+    }   
 }
