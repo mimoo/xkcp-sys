@@ -6,6 +6,7 @@ mod c_stuff {
     
     #[repr(C)]
     #[repr(align(8))]
+    #[derive(Clone)]
     struct KeccakWidth1600_12rounds_SpongeInstance {
         state: [libc::c_uchar; 200],
         rate: libc::c_uint,
@@ -25,6 +26,7 @@ mod c_stuff {
     }
 
     #[repr(C)]
+    #[derive(Clone)]
     enum KangarooTwelve_Phases {
         NOT_INITIALIZED,
         ABSORBING,
@@ -33,6 +35,7 @@ mod c_stuff {
     }
 
     #[repr(C)]
+    #[derive(Clone)]
     pub struct KangarooTwelve_Instance {
         queueNode: KeccakWidth1600_12rounds_SpongeInstance,
         finalNode: KeccakWidth1600_12rounds_SpongeInstance,
@@ -113,6 +116,7 @@ pub fn kangaroo_twelve(customization: &[u8], input: &[u8], output_len: usize) ->
     output
 }
 
+#[derive(Clone)]
 pub struct KangarooTwelve{
     state: c_stuff::KangarooTwelve_Instance,
     custom: Vec<u8>,
@@ -164,15 +168,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_shake128() {
-        let digest = kangaroo_twelve("testing".as_bytes(), "someinput".as_bytes(), 16);
+    fn test_k12() {
+        let digest = kangaroo_twelve(b"testing", b"someinput", 16);
 
         assert_eq!(
             digest,
             [187, 19, 67, 214, 73, 178, 187, 16, 174, 135, 82, 238, 25, 49, 129, 242]
         );
 
-        let mut state = KangarooTwelve::new("testing".as_bytes(), 16);
+        let mut state = KangarooTwelve::new(b"testing", 16);
         state.update("someinput".as_bytes());
         let digest2 = state.finalize();
 

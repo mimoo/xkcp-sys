@@ -27,3 +27,7 @@ skylakex = []
 [[bench]]
 name = "cshake"
 harness = false
+
+[[bench]]
+name = "k12"
+harness = false

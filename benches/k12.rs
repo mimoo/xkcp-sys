@@ -1,15 +1,15 @@
 #[macro_use]
 extern crate criterion;
 
-use xkcp_sys::cshake::CShake;
+use xkcp_sys::kangaroo_twelve::KangarooTwelve;
 
 fn criterion_benchmark(c: &mut criterion::Criterion) {
-    let state = CShake::new(b"testing");
+    let state = KangarooTwelve::new(b"testing", 32);
     c.bench_function("hashing", |b| b.iter(|| {
         let mut state = state.clone();
         state.update(criterion::black_box(b"someinput"));
         let digest = state.finalize();
-        assert_eq!(digest, [169, 78, 48, 230, 118, 51, 183, 191, 229, 68, 138, 32, 153, 195, 93, 64, 169, 233, 231, 33, 211, 139, 46, 69, 29, 202, 109, 184, 29, 148, 143, 93]);
+        assert_eq!(digest, [187, 19, 67, 214, 73, 178, 187, 16, 174, 135, 82, 238, 25, 49, 129, 242, 63, 255, 171, 107, 253, 27, 108, 124, 37, 144, 106, 194, 91, 12, 229, 67]);
     }));
 }
 

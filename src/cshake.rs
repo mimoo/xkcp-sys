@@ -171,12 +171,12 @@ mod tests {
 
     #[test]
     fn test_shake128() {
-        let digest = cshake128("testing".as_bytes(), "someinput".as_bytes(), 32);
+        let digest = cshake128(b"testing", b"someinput", 32);
 
         assert_eq!(digest, [169, 78, 48, 230, 118, 51, 183, 191, 229, 68, 138, 32, 153, 195, 93, 64, 169, 233, 231, 33, 211, 139, 46, 69, 29, 202, 109, 184, 29, 148, 143, 93]);
 
-        let mut state = CShake::new("testing".as_bytes());
-        state.update("someinput".as_bytes());
+        let mut state = CShake::new(b"testing");
+        state.update(b"someinput");
         let digest2 = state.finalize();
 
         assert_eq!(digest, digest2);
