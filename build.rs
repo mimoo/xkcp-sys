@@ -6,7 +6,23 @@ fn main() {
     //
 
     // the architecture targetted
-    let arch_target = "generic64";
+    let mut arch_target = "generic64";
+    
+    if cfg!(feature = "haswell") {
+        arch_target = "Haswell";
+    } else if cfg!(feature = "generic64lc") {
+        arch_target = "generic64lc";
+    } else if         cfg!(feature = "nehalem") {
+            arch_target = "Nehalem";
+        } else if         cfg!(feature = "sandybridge") {
+            arch_target = "SandyBridge";
+        } else if         cfg!(feature = "bulldozer") {
+            arch_target = "Bulldozer";
+        } else if         cfg!(feature = "haswell") {
+            arch_target = "Haswell";
+        } else if         cfg!(feature = "skylakex") {
+            arch_target = "SkylakeX";
+        } 
 
     // obtain version of XKCP from .xkcp_version
     let xkcp_version = std::fs::read_to_string(".xkcp_version").unwrap();
@@ -46,6 +62,7 @@ fn main() {
     let to_make = format!("{}/libkeccak.a", arch_target);
     std::process::Command::new("make")
         .args(&[to_make])
+        .env("CFLAGS", "-fPIC") // needed by rust
         .status()
         .expect("failed to make!");
 
