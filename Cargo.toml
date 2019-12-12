@@ -1,5 +1,5 @@
 [package]
-name = "sys-xkcp"
+name = "xkcp-sys"
 version = "0.1.0"
 authors = ["David Wong <davidwg@calibra.com>"]
 edition = "2018"
@@ -11,3 +11,10 @@ libc = "0.2.0"
 
 [build-dependencies]
 cc = "1.0"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "cshake"
+harness = false
