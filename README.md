@@ -7,3 +7,11 @@ Currently the build script:
 * uses this as bindings
 
 I'm not sure what the best way to offer support for different CPUs would be, perhaps manually through feature flags, or dynamically?
+
+## TODO:
+
+* dynamically compiles the best implementation that the host architecture supports
+    - use [target_feature](https://github.com/RustCrypto/universal-hashes/blob/master/polyval/src/field.rs) flag
+* use bindgen
+* clone XKCP and compile in OUT_DIR instead of in /XKCP directly
+* publish as a crate
