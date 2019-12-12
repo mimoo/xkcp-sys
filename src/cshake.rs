@@ -1,4 +1,8 @@
 mod c_stuff {
+    #![allow(non_upper_case_globals)]
+    #![allow(non_camel_case_types)]
+    #![allow(non_snake_case)]
+    #![allow(dead_code)]
 
     #[repr(C)]
     #[repr(align(8))]
@@ -94,11 +98,10 @@ mod c_stuff {
             output: *mut libc::c_uchar,
             outputBitLen: libc::size_t,
         ) -> libc::c_int;
-
     }
 }
 
-pub fn cSHAKE128(customization: &[u8], input: &[u8], output_len: usize) -> Vec<u8> {
+pub fn c_shake128(customization: &[u8], input: &[u8], output_len: usize) -> Vec<u8> {
     let mut output = vec![0; output_len];
     unsafe {
         assert_eq!(0,
@@ -118,9 +121,9 @@ pub fn cSHAKE128(customization: &[u8], input: &[u8], output_len: usize) -> Vec<u
     output
 }
 
-pub struct cSHAKE(c_stuff::cSHAKE_Instance);
+pub struct CShake(c_stuff::cSHAKE_Instance);
 
-impl cSHAKE {
+impl CShake {
     pub fn new(customization: &[u8]) -> Self {
         let mut state = c_stuff::cSHAKE_Instance::default();
         unsafe {
@@ -164,11 +167,11 @@ mod test {
 
     #[test]
     fn test_shake128() {
-        let digest = cSHAKE128("testing".as_bytes(), "someinput".as_bytes(), 32);
+        let digest = c_shake128("testing".as_bytes(), "someinput".as_bytes(), 32);
 
         assert_eq!(digest, [169, 78, 48, 230, 118, 51, 183, 191, 229, 68, 138, 32, 153, 195, 93, 64, 169, 233, 231, 33, 211, 139, 46, 69, 29, 202, 109, 184, 29, 148, 143, 93]);
 
-        let mut state = cSHAKE::new("testing".as_bytes());
+        let mut state = CShake::new("testing".as_bytes());
         state.update("someinput".as_bytes());
         let digest2 = state.finalize();
 

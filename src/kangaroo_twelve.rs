@@ -1,5 +1,9 @@
 mod c_stuff {
-
+    #![allow(non_upper_case_globals)]
+    #![allow(non_camel_case_types)]
+    #![allow(non_snake_case)]
+    #![allow(dead_code)]
+    
     #[repr(C)]
     #[repr(align(8))]
     struct KeccakWidth1600_12rounds_SpongeInstance {
