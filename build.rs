@@ -1,4 +1,16 @@
 fn main() {
+
+    //
+    // Settings
+    // ========
+    //
+
+    // the architecture targetted
+    let arch_target = "generic64";
+
+    // obtain version of XKCP from .xkcp_version
+    let xkcp_version = std::fs::read_to_string(".xkcp_version").unwrap();
+
     // the OUT_DIR where we clone and build XKCP
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").unwrap());
     // shortcut to the XKCP dir in OUT_DIR
@@ -8,9 +20,6 @@ fn main() {
     // Make libkeccak
     // ==============
     //
-
-    // obtain version of XKCP from .xkcp_version
-    let xkcp_version = std::fs::read_to_string(".xkcp_version").unwrap();
 
     // cd OUT_DIR
     assert!(std::env::set_current_dir(&out_dir).is_ok());
@@ -33,9 +42,10 @@ fn main() {
     // cd OUT_DIR/XKCP    
     assert!(std::env::set_current_dir(&xkcp_dir).is_ok());
 
-    // make generic64/libkeccak.a
+    // make <arch>libkeccak.a
+    let to_make = format!("{}/libkeccak.a", arch_target);
     std::process::Command::new("make")
-        .args(&["generic64/libkeccak.a"])
+        .args(&[to_make])
         .status()
         .expect("failed to make!");
 
@@ -45,6 +55,6 @@ fn main() {
 
     // tell cargo to re-build if our .xkcp_version changes
     println!("cargo:rerun-if-changed=.xkcp_version");
-    // tell cargo to use the library path OUT_DIR/XKCP/bin/generic64
-    println!("cargo:rustc-flags=-L {}/XKCP/bin/generic64", out_dir.display());
+    // tell cargo to use the library path OUT_DIR/XKCP/bin/<arch>
+    println!("cargo:rustc-flags=-L {}/XKCP/bin/{}", out_dir.display(), arch_target);
 }
