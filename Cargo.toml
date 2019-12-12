@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 libc = "0.2.0"
+ring = "0.16.9"
 
 [build-dependencies]
 cc = "1.0"
@@ -26,4 +27,8 @@ skylakex = []
 
 [[bench]]
 name = "cshake"
+harness = false
+
+[[bench]]
+name = "sha2"
 harness = false
