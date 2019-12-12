@@ -126,14 +126,14 @@ pub fn cshake128(customization: &[u8], input: &[u8], output_len: usize) -> Vec<u
 }
 
 #[derive(Clone)]
-pub struct CShake(c_stuff::cSHAKE_Instance);
+pub struct CShake(Box<c_stuff::cSHAKE_Instance>);
 
 impl CShake {
     pub fn new(customization: &[u8]) -> Self {
-        let mut state = c_stuff::cSHAKE_Instance::default();
+        let mut state = Box::new(c_stuff::cSHAKE_Instance::default());
         unsafe {
             assert_eq!(0, c_stuff::cSHAKE128_Initialize(
-                &mut state,
+                &mut (*state),
                 (32 * 8) as libc::size_t,
                 vec![].as_ptr(), // name is empty
                 0 as libc::size_t,
@@ -147,7 +147,7 @@ impl CShake {
     pub fn update(&mut self, input: &[u8]) {
         unsafe {
             assert_eq!(0, c_stuff::cSHAKE128_Update(
-                &mut self.0,
+                &mut (*self.0),
                 input.as_ptr(),
                 (input.len() * 8) as libc::size_t,
             ));
@@ -158,7 +158,7 @@ impl CShake {
         let mut output = vec![0; 32];
         unsafe {
             assert_eq!(0, c_stuff::cSHAKE128_Final(
-                &mut self.0,
+                &mut (*self.0),
                 output.as_mut_ptr(),
             ));
         }
@@ -172,14 +172,19 @@ mod tests {
 
     #[test]
     fn test_shake128() {
-        let digest = cshake128(b"testing", b"someinput", 32);
+        let expected_digest = [169, 78, 48, 230, 118, 51, 183, 191, 229, 68, 138, 32, 153, 195, 93, 64, 169, 233, 231, 33, 211, 139, 46, 69, 29, 202, 109, 184, 29, 148, 143, 93];
 
-        assert_eq!(digest, [169, 78, 48, 230, 118, 51, 183, 191, 229, 68, 138, 32, 153, 195, 93, 64, 169, 233, 231, 33, 211, 139, 46, 69, 29, 202, 109, 184, 29, 148, 143, 93]);
+        let digest = cshake128(b"testing", b"someinput", 32);
+        assert_eq!(digest, expected_digest);
 
         let mut state = CShake::new(b"testing");
+        let mut state2 = state.clone();
         state.update(b"someinput");
-        let digest2 = state.finalize();
+        let digest = state.finalize();
+        assert_eq!(digest, expected_digest);
 
-        assert_eq!(digest, digest2);
+        state2.update(b"someinput");
+        let digest = state2.finalize();
+        assert_eq!(digest, expected_digest);
     }
 }

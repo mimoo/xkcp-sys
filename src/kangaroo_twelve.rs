@@ -119,17 +119,17 @@ pub fn kangaroo_twelve(customization: &[u8], input: &[u8], output_len: usize) ->
 
 #[derive(Clone)]
 pub struct KangarooTwelve{
-    state: c_stuff::KangarooTwelve_Instance,
+    state: Box<c_stuff::KangarooTwelve_Instance>,
     custom: Vec<u8>,
     output_len: usize,
 }
 
 impl KangarooTwelve {
     pub fn new(customization: &[u8], output_len: usize) -> Self {
-        let mut state = c_stuff::KangarooTwelve_Instance::default();
+        let mut state = Box::new(c_stuff::KangarooTwelve_Instance::default());
         unsafe {
             assert_eq!(0, c_stuff::KangarooTwelve_Initialize(
-                &mut state,
+                &mut (*state),
                 output_len as libc::size_t,
             ));
         }
@@ -143,7 +143,7 @@ impl KangarooTwelve {
     pub fn update(&mut self, input: &[u8]) {
         unsafe {
             assert_eq!(0, c_stuff::KangarooTwelve_Update(
-                &mut self.state,
+                &mut (*self.state),
                 input.as_ptr(),
                 input.len() as libc::size_t,
             ));
@@ -154,7 +154,7 @@ impl KangarooTwelve {
         let mut output = vec![0; self.output_len];
         unsafe {
             assert_eq!(0, c_stuff::KangarooTwelve_Final(
-                &mut self.state,
+                &mut (*self.state),
                 output.as_mut_ptr(),
                 self.custom.as_ptr(),
                 self.custom.len() as libc::size_t,
@@ -170,17 +170,22 @@ mod tests {
 
     #[test]
     fn test_k12() {
-        let digest = kangaroo_twelve(b"testing", b"someinput", 16);
+        let expected_digest = [187, 19, 67, 214, 73, 178, 187, 16, 174, 135, 82, 238, 25, 49, 129, 242];
 
+        let digest = kangaroo_twelve(b"testing", b"someinput", 16);
         assert_eq!(
             digest,
-            [187, 19, 67, 214, 73, 178, 187, 16, 174, 135, 82, 238, 25, 49, 129, 242]
+            expected_digest
         );
 
         let mut state = KangarooTwelve::new(b"testing", 16);
+        let mut state2 = state.clone();
         state.update("someinput".as_bytes());
-        let digest2 = state.finalize();
+        let digest = state.finalize();
+        assert_eq!(digest, expected_digest);
 
-        assert_eq!(digest, digest2);
+        state2.update("someinput".as_bytes());
+        let digest = state2.finalize();
+        assert_eq!(digest, expected_digest);
     }   
 }
