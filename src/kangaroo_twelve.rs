@@ -5,7 +5,8 @@ mod c_stuff {
     #![allow(dead_code)]
     
     #[repr(C)]
-    #[repr(align(8))]
+    #[cfg_attr(feature = "haswell", repr(align(32)))]
+    #[cfg_attr(not(feature = "haswell"), repr(align(8)))]
     #[derive(Clone)]
     struct KeccakWidth1600_12rounds_SpongeInstance {
         state: [libc::c_uchar; 200],
