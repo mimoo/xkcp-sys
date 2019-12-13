@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 libc = "0.2.0"
 ring = "0.16.9"
+sha2 = "0.8.0"
 
 [build-dependencies]
 cc = "1.0"
