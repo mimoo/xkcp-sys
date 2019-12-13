@@ -126,15 +126,15 @@ pub struct KangarooTwelve{
 
 impl KangarooTwelve {
     pub fn new(customization: &[u8], output_len: usize) -> Self {
-        let mut state = Box::new(c_stuff::KangarooTwelve_Instance::default());
+        let mut state = c_stuff::KangarooTwelve_Instance::default();
         unsafe {
             assert_eq!(0, c_stuff::KangarooTwelve_Initialize(
-                &mut (*state),
+                &mut state,
                 output_len as libc::size_t,
             ));
         }
         Self {
-            state: state,
+            state: Box::new(state),
             custom: customization.to_vec(),
             output_len: output_len,
         }
