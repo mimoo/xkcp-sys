@@ -1,3 +1,5 @@
+**OBVIOUSLY DONT USE THIS AT THE MOMENT**
+
 These are rust bindings to the C reference implementations of the different keccak-based algorithms.
 
 Currently the build script:
